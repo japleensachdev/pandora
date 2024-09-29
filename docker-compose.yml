@@ -1,0 +1,55 @@
+version: '3'
+services:
+
+  kvrocks:
+    image: apache/kvrocks
+    working_dir: /kvrocks
+    volumes:
+        - ./storage:/kvrocks/conf
+    ports:
+        - 6101:6666
+    command: "--bind 0.0.0.0"
+
+  redis:
+    image: redis:7
+    working_dir: /cache
+    command: ./cache.conf --daemonize no
+    volumes:
+        - ./cache:/cache
+
+  clamav:
+    image: clamav/clamav
+    volumes:
+        - clamav-socket:/tmp
+
+  pandora:
+    build: .
+    working_dir: /pandora
+    tty: true
+    command:
+        - /bin/sh
+        - -c
+        - |
+            sleep 60
+            poetry run start
+            tail -F ./LICENSE
+    volumes:
+        - ./cache:/pandora/cache
+        - ./storage:/pandora/storage
+        - ./pandora/workers:/pandora/pandora/workers
+        - ./config:/pandora/config
+        - ./yara_rules:/pandora/yara_rules
+        - ./yara_repos:/pandora/yara_repos
+        - ./logs:/pandora/logs
+        - ./web_logs:/pandora/website/logs
+        - ./tasks:/pandora/tasks
+        - clamav-socket:/var/run/clamav
+    links:
+        - "clamav"
+        - "redis"
+        - "kvrocks"
+    ports:
+        - 6100:6100
+
+volumes:
+    clamav-socket:

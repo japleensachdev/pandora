@@ -1,0 +1,30 @@
+meta:
+  name: Blocklists
+  description: Mark some mimetypes and file extensions as malicious by default.
+  replicas: 5
+
+settings:
+  enable_extensions: false
+  overwrite_extensions:
+    # The extensions listed here will cause the report (and the task) to be marked as undecidable
+    # It is not recommended but can be useful if you have files you know are legitimate but
+    # will be flagged as malicious by the module, or any other module
+    - my_overwritten_ext
+  malicious_extensions:
+    - exe
+    - iso
+    - msi
+    - jar
+    - lnk
+    - reg
+    - dll
+    - scr
+    - bat
+    - cmd
+    - vb
+    - vbs
+    - vbe
+    - rev
+  enable_mimetypes: false
+  malicious_mimetypes:
+    - application/octet-stream
